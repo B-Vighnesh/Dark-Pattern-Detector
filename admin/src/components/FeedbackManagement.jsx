@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 
 export default function FeedbackManagement() {
+  const BASE = import.meta.env.VITE_API_BASE_URL;
+
+const CONFIG = {
+  API_URL: `${BASE}/feedback/admin/get`,
+};
   const Icon = ({ path, className = "w-6 h-6" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -25,7 +30,7 @@ export default function FeedbackManagement() {
     const fetchFeedback = async () => {
       try {
         setLoading(true);
-        const res = await fetch("http://localhost:8080/feedback/admin/get", {
+        const res = await fetch(CONFIG.API_URL, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

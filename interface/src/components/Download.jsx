@@ -9,12 +9,13 @@ const Download = () => {
   const [selectedChromeVersion, setSelectedChromeVersion] = useState('');
   const [selectedFirefoxVersion, setSelectedFirefoxVersion] = useState('');
   const [selectedEdgeVersion, setSelectedEdgeVersion] = useState('');
+const BASE = import.meta.env.VITE_API_BASE_URL;
 
   // fetch versions per browser
   useEffect(() => {
     const fetchVersions = async (browser, setter) => {
       try {
-        const response = await fetch(`http://localhost:8080/files/${browser}/versions`);
+        const response = await fetch(`${BASE}/files/${browser}/versions`);
         if (!response.ok) throw new Error(`Failed to fetch ${browser} versions`);
         const data = await response.json();
         setter(data);
@@ -37,15 +38,15 @@ const Download = () => {
 
   // download URLs (backend expects /files/admin/upload/{browser}/{version})
   const chromeDownloadUrl = selectedChromeVersion
-    ? `http://localhost:8080/files/download/chrome/${selectedChromeVersion}`
+    ? `${BASE}/files/download/chrome/${selectedChromeVersion}`
     : "#";
 
   const firefoxDownloadUrl = selectedFirefoxVersion
-    ? `http://localhost:8080/files/download/firefox/${selectedFirefoxVersion}`
+    ? `${BASE}/files/download/firefox/${selectedFirefoxVersion}`
     : "#";
 
   const edgeDownloadUrl = selectedEdgeVersion
-    ? `http://localhost:8080/files/download/edge/${selectedEdgeVersion}`
+    ? `${BASE}/files/download/edge/${selectedEdgeVersion}`
     : "#";
 
   // helper to render options

@@ -4,10 +4,12 @@ import jwt_decode from "jwt-decode";
 import "../assets/ReportIssue.css";
 
 // --- Configuration and API Calls ---
+const BASE = import.meta.env.VITE_API_BASE_URL;
 
 const CONFIG = {
-  API_URL: "http://localhost:8080/feedback/add",
+  API_URL: `${BASE}/feedback/add`,
 };
+
 
 const STATUS = {
   IDLE: "idle",
@@ -39,6 +41,18 @@ const submitFeedback = async (formData, googleToken) => {
 // --- Child Component for the Form ---
 
 const FeedbackForm = ({ userEmail, googleToken, onLogout }) => {
+  const Popup = ({ message, onClose }) => (
+  <div className="popup-overlay">
+    <div className="popup-box">
+      <h3>🎉 Report Submitted</h3>
+      <p>{message}</p>
+
+      <button onClick={onClose} className="btn btn-primary">
+        OK
+      </button>
+    </div>
+  </div>
+);
   // State is correctly structured for the backend
   const [formData, setFormData] = useState({
     url: "",
@@ -46,6 +60,7 @@ const FeedbackForm = ({ userEmail, googleToken, onLogout }) => {
     message: "",
   });
   const [status, setStatus] = useState(STATUS.IDLE);
+const [showPopup, setShowPopup] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -56,18 +71,18 @@ const FeedbackForm = ({ userEmail, googleToken, onLogout }) => {
     setStatus(STATUS.SUBMITTING);
 
     try {
-      await submitFeedback(formData, googleToken);
-      setStatus(STATUS.SUCCESS);
-      setFormData({ url: "", issue: "", message: "" }); // Reset form
-      
-      setTimeout(() => {
-        onLogout();
-      }, 2000);
+  await submitFeedback(formData, googleToken);
+  setStatus(STATUS.SUCCESS);
+  setShowPopup(true); // ⭐ show popup
 
-    } catch (err) {
-      console.error("Error submitting feedback:", err);
-      setStatus(STATUS.ERROR);
-    }
+  setFormData({ url: "", issue: "", message: "" });
+
+  // Logout after popup closes, not immediately
+} catch (err) {
+  console.error("Error submitting feedback:", err);
+  setStatus(STATUS.ERROR);
+}
+
   };
 
   return (
@@ -152,6 +167,16 @@ const FeedbackForm = ({ userEmail, googleToken, onLogout }) => {
           </p>
         )}
       </form>
+      {showPopup && (
+  <Popup
+    message="Your feedback has been submitted successfully!"
+    onClose={() => {
+      setShowPopup(false);
+      onLogout(); // logout once user closes popup
+    }}
+  />
+)}
+
     </>
   );
 };
@@ -191,6 +216,7 @@ const ReportIssue = () => {
     console.error("Google Login Failed");
     alert("Login failed. Please try again.");
   };
+
 
 return (
   <section id="report-issue" className="section report-issue">
@@ -235,6 +261,7 @@ return (
         />
       )}
     </div>
+    
   </section>
 );
 };

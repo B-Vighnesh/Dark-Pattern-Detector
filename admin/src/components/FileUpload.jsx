@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 
 export default function FileUploadCard({ onUploadSuccess }) {
+  const BASE = import.meta.env.VITE_API_BASE_URL;
+
+
   const [file, setFile] = useState(null);
   const [status, setStatus] = useState('idle');
   const [browser, setBrowser] = useState('chrome'); // default
@@ -30,7 +33,7 @@ const handleUpload = async () => {
     const formData = new FormData();
     formData.append('file', file); // key must match backend @RequestParam("file")
 
-    const url = `http://localhost:8080/files/admin/upload/${browser}/${version}`;
+    const url = `${BASE}/files/admin/upload/${browser}/${version}`;
     const response = await fetch(url, {
         method: 'POST',
         headers: {
